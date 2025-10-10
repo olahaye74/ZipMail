@@ -1,0 +1,34 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Office JavaScript API -->
+  <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+  <!-- zip.js (librairie de compression/chiffrement AES) -->
+  <!-- Tu peux l'installer via npm et le servir depuis /node_modules -->
+  <script type="module">
+    import * as zip from "https://localhost:3000/node_modules/@zip.js/zip.js/dist/zip.min.js";
+    window.zip = zip; // rendre accessible à commands.js
+  </script>
+
+  <!-- Ton script principal -->
+  <script type="text/javascript" src="https://localhost:3000/src/commands/commands.js"></script>
+
+  <!-- Sécurité : autorise localhost pour le dev -->
+  <meta http-equiv="Content-Security-Policy" 
+        content="default-src 'self' https://localhost:3000 https://appsforoffice.microsoft.com https://ajax.aspnetcdn.com;
+                 script-src 'self' https://localhost:3000 https://appsforoffice.microsoft.com 'unsafe-inline';
+                 connect-src https://localhost:3000 https://appsforoffice.microsoft.com;
+                 style-src 'self' 'unsafe-inline';
+                 img-src 'self' data: https://localhost:3000;">
+</head>
+
+<body>
+  <!-- Cette page n’a pas d’interface utilisateur -->
+</body>
+</html>

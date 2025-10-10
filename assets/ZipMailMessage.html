@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Message compressé - ZipMail</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      margin: 0;
+      padding: 2em;
+    }
+    .container {
+      max-width: 600px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5em 2em;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    h1 {
+      color: #0078d4;
+      font-size: 1.4em;
+      margin-bottom: 0.4em;
+      text-align: center;
+    }
+    p {
+      line-height: 1.5;
+    }
+    a {
+      color: #0078d4;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 2em;
+    }
+    .zip-icon {
+      width: 64px;
+      height: 64px;
+      display: block;
+      margin: 0 auto 1em auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://localhost:3000/assets/icon-zip-64.png" alt="ZipMail" class="zip-icon" />
+    <h1>Message compressé avec ZipMail</h1>
+    <p>Bonjour,</p>
+    <p>
+      Ce message et ses pièces jointes ont été compressés pour faciliter l'envoi.
+      Vous trouverez ci-joint un fichier <strong>msg.zip</strong>.
+    </p>
+    <p>
+      Pour lire le message, veuillez extraire le contenu de cette archive à l’aide d’un outil
+      compatible (par exemple <a href="https://www.7-zip.org/">7-Zip</a>).
+    </p>
+    <p>
+      Une fois extrait, ouvrez le fichier <strong>message.htm</strong> pour lire le contenu original.
+    </p>
+    <div class="footer">
+      &copy; 2025 ZipMail Add-in
+    </div>
+  </div>
+</body>
+</html>
