@@ -1,6 +1,7 @@
 # 🧩 ZipMail Developer Guide
 
-This document explains how to **set up a full development environment** for the ZipMail Outlook Add-in using the **Microsoft 365 Developer Program**.  
+This document explains how to **set up a full development environment** for the ZipMail Outlook Add-in  
+using the **Microsoft 365 Developer Program**.  
 It allows you to sideload and debug the add-in without requiring a corporate Microsoft 365 or on-premise Exchange server.
 
 ---
@@ -52,15 +53,9 @@ npm run dev-server
 
 You should see:
 
-```
-The dev server is running on port 3000
-```
+`The dev server is running on port 3000`
 
-Your add-in files will now be served at:
-
-```
-[https://localhost:3000][https://localhost:3000]
-```
+Your add-in files will now be served at: [https://localhost:3000](https://localhost:3000)
 
 ## 4️⃣ Sideload the Add-in in Outlook Web
 
@@ -71,18 +66,20 @@ Your add-in files will now be served at:
 5. Select your local `manifest.xml` file.
 Outlook will confirm:
 > “Your add-in has been added successfully.”
+
 ✅ The ZipMail button should now appear in the ribbon when composing or reading an email.
 
 ## 5️⃣ Debug ZipMail
 
 When you send or open an email using ZipMail:  
-Outlook loads the add-in directly from [https://localhost:3000][https://localhost:3000]  
+Outlook loads the add-in directly from [https://localhost:3000](https://localhost:3000)  
 You can open the browser console (Cmd + Option + I) to inspect logs  
 Webpack automatically hot-reloads changes as you edit your code  
 You can edit files like:
 - `/src/commands/commands.js`
 - `/assets/ZipMailMessage.html`
 - `/src/taskpane/password.html`
+
 …and see changes live without redeploying.
 
 ## 6️⃣ Stopping and Cleaning Up
@@ -95,8 +92,8 @@ Delete ZipMail
 
 ## 7️⃣ (Optional) Connect to Outlook Desktop
 
-You can also add your developer tenant account to Outlook Desktop (if your IT policies allow external accounts):
-Outlook → Preferences → Accounts → Add Email Account
-Use admin@yourtenant.onmicrosoft.com
-Outlook will detect your Exchange Online sandbox automatically
+You can also add your developer tenant account to Outlook Desktop (if your IT policies allow external accounts):  
+Outlook → Preferences → Accounts → Add Email Account  
+Use admin@yourtenant.onmicrosoft.com  
+Outlook will detect your Exchange Online sandbox automatically  
 The ZipMail button will appear in your desktop Outlook as well
