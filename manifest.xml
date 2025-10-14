@@ -13,7 +13,7 @@
   <Description DefaultValue="Compresse les messages et pièces jointes dans un fichier ZIP, avec option de chiffrement."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-zip-64.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-zip-128.png"/>
-  <SupportUrl DefaultValue="https://www.cea.fr"/>
+  <SupportUrl DefaultValue="https://github.com/olahaye74/ZipMail"/>
 
   <AppDomains>
     <AppDomain>https://localhost:3000</AppDomain>
