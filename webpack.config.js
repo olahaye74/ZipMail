@@ -80,6 +80,11 @@ export default {
       template: "./src/commands/commands.html",
       chunks: ["commands"],
     }),
+    new HtmlWebpackPlugin({
+      filename: "password.html",
+      template: "./src/taskpane/password.html",
+      chunks: [], // pas besoin d'injecter de JS
+    }),
 
     // Copie le manifeste et les assets
     new CopyWebpackPlugin({
