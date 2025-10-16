@@ -142,19 +142,33 @@
         <bt:String id="GroupLabel" DefaultValue="ZipMail"/>
         <bt:String id="ZipMailMenuLabel" DefaultValue="Zip"/>
         <bt:String id="ZipMailMenuTitle" DefaultValue="ZipMail"/>
-        <bt:String id="ZipSimpleLabel" DefaultValue="Zip Simple"/>
-        <bt:String id="ZipSimpleTitle" DefaultValue="Compression simple"/>
-        <bt:String id="ZipEncryptedLabel" DefaultValue="Zip Chiffré"/>
-        <bt:String id="ZipEncryptedTitle" DefaultValue="Compression chiffrée"/>
+        <bt:String id="ZipSimpleLabel" DefaultValue="ZIP only">
+          <bt:Override Locale="fr-fr" Value="ZIP simple" />
+        </bt:String>
+        <bt:String id="ZipSimpleTitle" DefaultValue="Compression simple">
+          <bt:Override Locale="fr-fr" Value="Compression simple" />
+        </bt:String>
+        <bt:String id="ZipEncryptedLabel" DefaultValue="Encrypted ZIP">
+          <bt:Override Locale="fr-fr" Value="ZIP Chiffré" />
+        </bt:String>
+        <bt:String id="ZipEncryptedTitle" DefaultValue="Encrypted Compression">
+          <bt:Override Locale="fr-fr" Value="Compression chiffrée" />
+        </bt:String>
       </bt:ShortStrings>
 
       <bt:LongStrings>
         <bt:String id="ZipMailMenuDesc" DefaultValue="Compress message and its attachements as a ZIP file.">
           <bt:Override Locale="fr-fr" Value="Compresse le message et les pièces jointes en un fichier ZIP." />
         </bt:String>
-		<bt:String id="GroupTooltipId" DefaultValue="Outils pour compresser les messages et pièces jointes dans un fichier ZIP."/>
-        <bt:String id="ZipSimpleDesc" DefaultValue="Créer un ZIP sans mot de passe."/>
-        <bt:String id="ZipEncryptedDesc" DefaultValue="Créer un ZIP protégé par mot de passe."/>
+        <bt:String id="GroupTooltipId" DefaultValue="Tool to compress messages and attachments into a ZIP file.">
+          <bt:Override Locale="fr-fr" Value="Outil pour compresser les messages et pièces jointes dans un fichier ZIP." />
+        </bt:String>
+        <bt:String id="ZipSimpleDesc" DefaultValue="Use a password-less ZIP as attachment.">
+          <bt:Override Locale="fr-fr" Value="Utilise un ZIP sans mot de passe comme pièce jointe." />
+        </bt:String>
+        <bt:String id="ZipEncryptedDesc" DefaultValue="Use a password protected ZIP as attachment.">
+          <bt:Override Locale="fr-fr" Value="Utilise un ZIP avec mot de passe comme pièce jointe." />
+        </bt:String>
       </bt:LongStrings>
     </Resources>
 
