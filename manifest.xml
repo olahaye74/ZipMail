@@ -76,11 +76,11 @@
             <OfficeTab id="TabDefault">
               <Group id="msgComposeGroup">
                 <Label resid="GroupLabel"/>
-                <Control xsi:type="Button" id="ZipButton">
-                  <Label resid="ZipButtonLabel"/>
+                <Control xsi:type="Menu" id="ZipMailMenu">
+                  <Label resid="ZipMailMenuLabel"/>
                   <Supertip>
-                    <Title resid="ZipButtonTitle"/>
-                    <Description resid="ZipButtonDesc"/>
+                    <Title resid="ZipMailMenuTitle"/>
+                    <Description resid="ZipMailMenuDesc"/>
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="Icon.16"/>
@@ -89,9 +89,43 @@
                     <bt:Image size="80" resid="Icon.80"/>
                     <bt:Image size="128" resid="Icon.128"/>
                   </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>enableZip</FunctionName>
-                  </Action>
+                  <!-- MENU DÉROULANT : Clic sur la flèche -->
+                  <Items>
+                    <Item id="ZipNormal">
+                      <Label resid="ZipNormalLabel"/>
+                        <Supertip>
+                          <Title resid="ZipNormalTitle"/>
+                          <Description resid="ZipNormalDesc"/>
+                        </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16"/>
+                        <bt:Image size="32" resid="Icon.32"/>
+                        <bt:Image size="64" resid="Icon.64"/>
+                        <bt:Image size="80" resid="Icon.80"/>
+                        <bt:Image size="128" resid="Icon.128"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>enableZip</FunctionName>
+                      </Action>
+                    </Item>
+                     <Item id="ZipEncrypted">
+                      <Label resid="ZipEncryptedLabel"/>
+                        <Supertip>
+                          <Title resid="ZipEncryptedTitle"/>
+                          <Description resid="ZipEncryptedDesc"/>
+                        </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="IconLocked.16"/>
+                        <bt:Image size="32" resid="IconLocked.32"/>
+                        <bt:Image size="64" resid="IconLocked.64"/>
+                        <bt:Image size="80" resid="IconLocked.80"/>
+                        <bt:Image size="128" resid="IconLocked.128"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>enableZipEncrypted</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
                 </Control>
               </Group>
             </OfficeTab>
@@ -111,6 +145,11 @@
         <bt:Image id="Icon.64" DefaultValue="https://localhost:3000/assets/icon-zip-64.png"/>
         <bt:Image id="Icon.80" DefaultValue="https://localhost:3000/assets/icon-zip-80.png"/>
         <bt:Image id="Icon.128" DefaultValue="https://localhost:3000/assets/icon-zip-128.png"/>
+        <bt:Image id="IconLocked.16" DefaultValue="https://localhost:3000/assets/icon-zip-locked-16.png"/>
+        <bt:Image id="IconLocked.32" DefaultValue="https://localhost:3000/assets/icon-zip-locked-32.png"/>
+        <bt:Image id="IconLocked.64" DefaultValue="https://localhost:3000/assets/icon-zip-locked-64.png"/>
+        <bt:Image id="IconLocked.80" DefaultValue="https://localhost:3000/assets/icon-zip-locked-80.png"/>
+        <bt:Image id="IconLocked.128" DefaultValue="https://localhost:3000/assets/icon-zip-locked-128.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/>
@@ -118,11 +157,17 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="ZipMail"/>
-        <bt:String id="ZipButtonLabel" DefaultValue="ZIP"/>
-        <bt:String id="ZipButtonTitle" DefaultValue="Compresser"/>
+        <bt:String id="ZipMailMenuLabel" DefaultValue="ZIP"/>
+        <bt:String id="ZipMailMenuTitle" DefaultValue="Compresser"/>
+        <bt:String id="ZipNormalLabel" DefaultValue="ZIP normal"/>
+        <bt:String id="ZipNormalTitle" DefaultValue="ZIP sans chiffrer"/>
+        <bt:String id="ZipEncryptedLabel" DefaultValue="ZIP chiffré"/>
+        <bt:String id="ZipEncryptedTitle" DefaultValue="ZIP avec mot de passe"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="ZipButtonDesc" DefaultValue="Compresse le message."/>
+        <bt:String id="ZipMailMenuDesc" DefaultValue="Compresse le message en ZIP. Cliquez pour ZIP simple, ou sur la flèche pour chiffrer."/>
+	<bt:String id="ZipNormalDesc" DefaultValue="Compresse sans chiffrer."/>
+	<bt:String id="ZipEncryptedDesc" DefaultValue="Compresse avec mot de passe (AES-256)."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
