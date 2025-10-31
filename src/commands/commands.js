@@ -22,18 +22,47 @@ Office.actions.associate("enableZipEncrypted", enableZipEncrypted);
 // 1️⃣ Boutons du ruban
 // =============================================
 
+function updateRibbonState() {
+  const control = Office.context.ui.getControl("ZipMailMenu");
+  if (!control) return;
+
+  // Bouton enfoncé
+  control.isPressed = zipEnabled;
+
+  // Icône : cadenas si chiffré
+  const iconSet = zipEncrypted
+    ? {
+        16: "IconLocked.16",
+        32: "IconLocked.32",
+        64: "IconLocked.64",
+        80: "IconLocked.80",
+        128: "IconLocked.128"
+      }
+    : {
+        16: "Icon.16",
+        32: "Icon.32",
+        64: "Icon.64",
+        80: "Icon.80",
+        128: "Icon.128"
+      };
+
+  control.setIcon(iconSet);
+}
+
 function enableZip(event) {
   zipEnabled = !zipEnabled;
   zipEncrypted = false;
+  updateRibbonState();
   showNotification(zipEnabled ? "Zip activé" : "Zip désactivé");
-  event.completed();
+  event.completed({ allowEvent: true });
 }
 
 function enableZipEncrypted(event) {
   zipEnabled = true;
   zipEncrypted = !zipEncrypted;
+  updateRibbonState();
   showNotification(zipEncrypted ? "Zip chiffré activé 🔒" : "Zip normal activé");
-  event.completed();
+  event.completed({ allowEvent: true });
 }
 
 // =============================================
