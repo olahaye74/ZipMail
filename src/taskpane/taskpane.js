@@ -40,7 +40,6 @@ Office.onReady(() => {
       Niveau: <strong>${levelSelect.value}</strong><br>
       Chiffrement: <strong>${pwdInput.value ? "AES-256" : "désactivé"}</strong>
     `;
-    setTimeout(() => status.textContent = "Prêt", 1000);
+    setTimeout(() => (status.textContent = "Prêt"), 1000);
   };
 });
-

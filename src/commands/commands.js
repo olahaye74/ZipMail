@@ -47,14 +47,14 @@ function updateRibbonState() {
         32: "IconLocked.32",
         64: "IconLocked.64",
         80: "IconLocked.80",
-        128: "IconLocked.128"
+        128: "IconLocked.128",
       }
     : {
         16: "Icon.16",
         32: "Icon.32",
         64: "Icon.64",
         80: "Icon.80",
-        128: "Icon.128"
+        128: "Icon.128",
       };
 
   control.setIcon(iconSet);
@@ -114,7 +114,7 @@ async function onMessageSend(event) {
     // === OPTIONS DE BASE : TOUJOURS APPLIQUÉES ===
     let options = {
       compression: "DEFLATE",
-      compressionOptions: { level: parseInt(zipLevel) }
+      compressionOptions: { level: parseInt(zipLevel) },
     };
 
     // Si chiffrement activé, demande et ajout du mot de passe à la config zip.
@@ -138,9 +138,8 @@ async function onMessageSend(event) {
       options = {
         ...options,
         password,
-        encryptionStrength: 3
+        encryptionStrength: 3,
       };
-
     }
 
     // Ajoute le corps dans le zip
@@ -153,7 +152,7 @@ async function onMessageSend(event) {
       if (content.format === "base64") {
         const bytes = base64ToUint8Array(content.content);
         const blob = new Blob([bytes], { type: content.contentType || "application/octet-stream" });
-        await zipWriter.add(att.name, new zip.BlobReader(blob), encryptionOptions);
+        await zipWriter.add(att.name, new zip.BlobReader(blob), options);
       }
     }
 
@@ -370,7 +369,7 @@ async function getPasswordFromDialog(defaultPassword = "") {
         const dialog = asyncResult.value;
 
         // ENVOIE LE MOT DE PASSE PAR POSTMESSAGE
-		const readyHandler = (arg) => {
+        const readyHandler = (arg) => {
           if (arg.message === "ready") {
             dialog.postMessage({ type: "defaultPassword", value: defaultPassword });
             dialog.removeEventHandler(Office.EventType.DialogMessageReceived, readyHandler);
@@ -393,4 +392,3 @@ async function getPasswordFromDialog(defaultPassword = "") {
     );
   });
 }
-
