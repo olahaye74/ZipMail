@@ -23,9 +23,11 @@
   <Hosts>
     <Host Name="Mailbox"/>
   </Hosts>
+
+  <!-- MinVersion=1.3 to prevent loading in old client and silently crash on ES6 scripts -->
   <Requirements>
     <Sets>
-      <Set Name="Mailbox" MinVersion="1.1"/>
+      <Set Name="Mailbox" MinVersion="1.3"/>
     </Sets>
   </Requirements>
 
@@ -153,7 +155,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/>
-        <bt:Url id="JSRuntime.Url" DefaultValue="https://localhost:3000/commands.js"/>
+        <bt:Url id="JSRuntime.Url" DefaultValue="https://localhost:3000/commands.bundle.js"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="ZipMail"/>
@@ -165,9 +167,10 @@
         <bt:String id="ZipEncryptedTitle" DefaultValue="ZIP avec mot de passe"/>
       </bt:ShortStrings>
       <bt:LongStrings>
+        <bt:String id="residAppDesc" DefaultValue="Requiert Outlook 2021 ou version ultérieure (ou Outlook Web). Ne fonctionne pas sur Outlook 2013/2016."/>
         <bt:String id="ZipMailMenuDesc" DefaultValue="Compresse le message en ZIP. Cliquez pour ZIP simple, ou sur la flèche pour chiffrer."/>
-	<bt:String id="ZipNormalDesc" DefaultValue="Compresse sans chiffrer."/>
-	<bt:String id="ZipEncryptedDesc" DefaultValue="Compresse avec mot de passe (AES-256)."/>
+        <bt:String id="ZipNormalDesc" DefaultValue="Compresse sans chiffrer."/>
+        <bt:String id="ZipEncryptedDesc" DefaultValue="Compresse avec mot de passe (AES-256)."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
