@@ -110,7 +110,7 @@
                         <FunctionName>enableZip</FunctionName>
                       </Action>
                     </Item>
-                     <Item id="ZipEncrypted">
+                    <Item id="ZipEncrypted">
                       <Label resid="ZipEncryptedLabel"/>
                         <Supertip>
                           <Title resid="ZipEncryptedTitle"/>
@@ -127,8 +127,7 @@
                         <FunctionName>enableZipEncrypted</FunctionName>
                       </Action>
                     </Item>
-                    </Item>
-                     <Item id="Options">
+                    <Item id="Options">
                       <Label resid="OptionsLabel"/>
                         <Supertip>
                           <Title resid="OptionsTitle"/>
