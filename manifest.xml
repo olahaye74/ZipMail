@@ -127,6 +127,25 @@
                         <FunctionName>enableZipEncrypted</FunctionName>
                       </Action>
                     </Item>
+                    </Item>
+                     <Item id="Options">
+                      <Label resid="OptionsLabel"/>
+                        <Supertip>
+                          <Title resid="OptionsTitle"/>
+                          <Description resid="OptionsDesc"/>
+                        </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="IconOptions.16"/>
+                        <bt:Image size="32" resid="IconOptions.32"/>
+                        <bt:Image size="64" resid="IconOptions.64"/>
+                        <bt:Image size="80" resid="IconOptions.80"/>
+                        <bt:Image size="128" resid="IconOptions.128"/>
+                      </Icon>
+                      <Action xsi:type="ShowTaskpane">
+                        <SourceLocation resid="Taskpane.Url"/>
+                        <TaskpaneId>ZipMailOptions</TaskpaneId>
+                      </Action>
+                    </Item>
                   </Items>
                 </Control>
               </Group>
@@ -152,8 +171,14 @@
         <bt:Image id="IconLocked.64" DefaultValue="https://localhost:3000/assets/icon-zip-locked-64.png"/>
         <bt:Image id="IconLocked.80" DefaultValue="https://localhost:3000/assets/icon-zip-locked-80.png"/>
         <bt:Image id="IconLocked.128" DefaultValue="https://localhost:3000/assets/icon-zip-locked-128.png"/>
+        <bt:Image id="IconOptions.16" DefaultValue="https://localhost:3000/assets/icon-options-16.png"/>
+        <bt:Image id="IconOptions.32" DefaultValue="https://localhost:3000/assets/icon-options-32.png"/>
+        <bt:Image id="IconOptions.64" DefaultValue="https://localhost:3000/assets/icon-options-64.png"/>
+        <bt:Image id="IconOptions.80" DefaultValue="https://localhost:3000/assets/icon-options-80.png"/>
+        <bt:Image id="IconOptions.128" DefaultValue="https://localhost:3000/assets/icon-options-128.png"/>
       </bt:Images>
       <bt:Urls>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
         <bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/>
         <bt:Url id="JSRuntime.Url" DefaultValue="https://localhost:3000/commands.bundle.js"/>
       </bt:Urls>
@@ -165,12 +190,15 @@
         <bt:String id="ZipNormalTitle" DefaultValue="ZIP sans chiffrer"/>
         <bt:String id="ZipEncryptedLabel" DefaultValue="ZIP chiffré"/>
         <bt:String id="ZipEncryptedTitle" DefaultValue="ZIP avec mot de passe"/>
+        <bt:String id="OptionsTitle" DefaultValue="Options"/>
+        <bt:String id="OptionsTitle" DefaultValue="Paramètres ZipMail"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="residAppDesc" DefaultValue="Requiert Outlook 2021 ou version ultérieure (ou Outlook Web). Ne fonctionne pas sur Outlook 2013/2016."/>
         <bt:String id="ZipMailMenuDesc" DefaultValue="Compresse le message en ZIP. Cliquez pour ZIP simple, ou sur la flèche pour chiffrer."/>
         <bt:String id="ZipNormalDesc" DefaultValue="Compresse sans chiffrer."/>
         <bt:String id="ZipEncryptedDesc" DefaultValue="Compresse avec mot de passe (AES-256)."/>
+        <bt:String id="OptionsDesc" DefaultValue="Niveau de compression, mot de passe, prévisualisation..."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

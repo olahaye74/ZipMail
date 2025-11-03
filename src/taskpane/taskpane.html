@@ -21,10 +21,38 @@
 </head>
 
 <body class="ms-Fabric ms-font-m">
-  <h2>ZipMail</h2>
-  <button id="btnZip">Activer Zip</button>
-  <button id="btnZipEnc">Activer Zip chiffré 🔒</button>
-  <p id="status"></p>
+  <div class="section">
+    <h2>ZipMail - Options</h2>
+  </div>
+
+  <!-- Niveau de compression -->
+  <div class="section">
+    <label class="ms-Label">Niveau de compression</label>
+    <select id="compressionLevel" class="ms-Dropdown">
+      <option value="0">Aucun (rapide)</option>
+      <option value="3">Rapide</option>
+      <option value="6" selected>Équilibré</option>
+      <option value="9">Maximum (lent)</option>
+    </select>
+  </div>
+
+  <!-- Mot de passe -->
+  <div class="section">
+    <label class="ms-Label">Mot de passe (AES-256)</label>
+    <input type="password" id="zipPassword" class="ms-TextField-field" placeholder="Laisser vide = sans chiffrement"/>
+    <button id="togglePassword" class="ms-Button ms-Button--small">Voir</button>
+  </div>
+
+  <!-- Prévisualisation -->
+  <div class="section">
+    <button id="previewZip" class="ms-Button ms-Button--primary">Prévisualiser le ZIP</button>
+    <div id="preview"></div>
+  </div>
+
+  <!-- État -->
+  <div class="section">
+    <p id="status" style="color: green;"></p>
+  </div>
   <script src="taskpane.bundle.js"></script>
 </body>
 

@@ -5,12 +5,23 @@
 
 let zipEnabled = false;
 let zipEncrypted = false;
+let zipLevel = localStorage.getItem("zipLevel") || 6;
+let zipPassword = localStorage.getItem("zipPassword") || "";
 
 // =============================================
 // INITIALISATION
 // =============================================
 Office.onReady(() => {
   console.log("ZipMail commands.js chargé");
+});
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== "https://localhost:3000") return;
+  const [type, key, value] = event.data.split(":");
+  if (type === "update") {
+    if (key === "level") zipLevel = value;
+    if (key === "password") zipPassword = value;
+  }
 });
 
 Office.actions.associate("onMessageSend", onMessageSend);
@@ -100,22 +111,40 @@ async function onMessageSend(event) {
     const blobWriter = new zip.BlobWriter("application/zip");
     const zipWriter = new zip.ZipWriter(blobWriter);
 
-    // Si chiffrement activé, demande du mot de passe
-    let password = null;
+    // === OPTIONS DE BASE : TOUJOURS APPLIQUÉES ===
+    let options = {
+      compression: "DEFLATE",
+      compressionOptions: { level: parseInt(zipLevel) }
+    };
+
+    // Si chiffrement activé, demande et ajout du mot de passe à la config zip.
     if (zipEncrypted) {
-      password = await getPasswordFromDialog();
-      if (!password) {
-        showNotification("Mot de passe non fourni — envoi annulé");
+      const result = await getPasswordFromDialog(zipPassword); // zipPassword = localStorage
+      if (!result || !result.password) {
+        showNotification("Mot de passe requis — envoi annulé");
         event.completed({ allowEvent: false });
         await zipWriter.close();
         return;
       }
+
+      const { password, save } = result;
+
+      // Sauvegarde si demandé
+      if (save) {
+        localStorage.setItem("zipPassword", password);
+        zipPassword = password;
+      }
+
+      options = {
+        ...options,
+        password,
+        encryptionStrength: 3
+      };
+
     }
 
-    const encryptionOptions = password ? { password, encryptionStrength: 3 } : {};
-
     // Ajoute le corps dans le zip
-    await zipWriter.add("message.htm", new zip.TextReader(bodyHtml), encryptionOptions);
+    await zipWriter.add("message.htm", new zip.TextReader(bodyHtml), options);
 
     // Ajoute toutes les pièces jointes existantes
     const attachments = item.attachments || [];
@@ -332,19 +361,36 @@ async function addAttachmentFromBase64(name, base64) {
 }
 
 // --- Boîte de dialogue mot de passe ---
-async function getPasswordFromDialog() {
+async function getPasswordFromDialog(defaultPassword = "") {
   return new Promise((resolve) => {
     Office.context.ui.displayDialogAsync(
-      "https://localhost:3000/password.html",
-      { height: 30, width: 30 },
+      "https://localhost:3000/password.html", // URL SANS PARAMÈTRE
+      { height: 35, width: 35 },
       (asyncResult) => {
         const dialog = asyncResult.value;
+
+        // ENVOIE LE MOT DE PASSE PAR POSTMESSAGE
+		const readyHandler = (arg) => {
+          if (arg.message === "ready") {
+            dialog.postMessage({ type: "defaultPassword", value: defaultPassword });
+            dialog.removeEventHandler(Office.EventType.DialogMessageReceived, readyHandler);
+          }
+        };
+        dialog.addEventHandler(Office.EventType.DialogMessageReceived, readyHandler);
+
         dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
           dialog.close();
-          resolve(arg.message);
+          try {
+            const data = JSON.parse(arg.message);
+            resolve({ password: data.password, save: data.save });
+          } catch {
+            resolve({ password: arg.message, save: false });
+          }
         });
+
         dialog.addEventHandler(Office.EventType.DialogEventReceived, () => resolve(null));
       }
     );
   });
 }
+
