@@ -18,11 +18,9 @@ Office.onReady(() => {
   // Sauvegarde en temps réel
   levelSelect.onchange = () => {
     localStorage.setItem("zipLevel", levelSelect.value);
-    Office.context.ui.messageParent(`update:level:${levelSelect.value}`);
   };
   pwdInput.onchange = () => {
     localStorage.setItem("zipPassword", pwdInput.value);
-    Office.context.ui.messageParent(`update:password:${pwdInput.value}`);
   };
 
   // Toggle visibilité

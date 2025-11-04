@@ -11,8 +11,9 @@
   <!-- zip.js (librairie de compression/chiffrement AES) -->
   <!-- Tu peux l'installer via npm et le servir depuis /node_modules -->
   <script type="module">
-    import * as zip from "https://localhost:3000/node_modules/@zip.js/zip.js/dist/zip.min.js";
+    import * as zip from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js@latest/index.min.js";
     window.zip = zip; // rendre accessible à commands.js
+    console.log("[ZipMail] zip.js chargé depuis CDN (latest)");
   </script>
 
   <!-- Ton script principal -->
