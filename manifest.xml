@@ -142,7 +142,6 @@
                       </Icon>
                       <Action xsi:type="ShowTaskpane">
                         <SourceLocation resid="Taskpane.Url"/>
-                        <TaskpaneId>ZipMailOptions</TaskpaneId>
                       </Action>
                     </Item>
                   </Items>
@@ -190,7 +189,7 @@
         <bt:String id="ZipEncryptedLabel" DefaultValue="ZIP chiffré"/>
         <bt:String id="ZipEncryptedTitle" DefaultValue="ZIP avec mot de passe"/>
         <bt:String id="OptionsTitle" DefaultValue="Options"/>
-        <bt:String id="OptionsTitle" DefaultValue="Paramètres ZipMail"/>
+        <bt:String id="OptionsLabel" DefaultValue="Paramètres ZipMail"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="residAppDesc" DefaultValue="Requiert Outlook 2021 ou version ultérieure (ou Outlook Web). Ne fonctionne pas sur Outlook 2013/2016."/>
