@@ -21,6 +21,7 @@ window.addEventListener("message", (event) => {
 
 Office.actions.associate("onMessageSend", onMessageSend);
 Office.actions.associate("onMessageRead", onMessageRead);
+Office.actions.associate("disableZip", disableZip);
 Office.actions.associate("enableZip", enableZip);
 Office.actions.associate("enableZipEncrypted", enableZipEncrypted);
 
@@ -63,9 +64,62 @@ function getZipMode() {
   return localStorage.getItem(ZIP_MODE_KEY) || "none";
 }
 
+// Mise à jour de l'icone du split-button ZipMail en fonction de l'état (non, zip, encrypted)
+async function updateRibbonIcon() {
+  let icons = {};
+  const currentMode = getZipMode();
+
+  if (currentMode === "zip") {
+    icons = {
+      ZipMailMenu: [
+        { size: 16, resid: "Icon.16" },
+        { size: 32, resid: "Icon.32" },
+        { size: 64, resid: "Icon.64" },
+        { size: 80, resid: "Icon.80" },
+        { size: 128, resid: "Icon.128" },
+      ],
+    };
+  } else if (currentMode === "encrypted") {
+    icons = {
+      ZipMailMenu: [
+        { size: 16, resid: "IconLocked.16" },
+        { size: 32, resid: "IconLocked.32" },
+        { size: 64, resid: "IconLocked.64" },
+        { size: 80, resid: "IconLocked.80" },
+        { size: 128, resid: "IconLocked.128" },
+      ],
+    };
+  } else {
+    icons = {
+      ZipMailMenu: [
+        { size: 16, resid: "IconGreyed.16" },
+        { size: 32, resid: "IconGreyed.32" },
+        { size: 64, resid: "IconGreyed.64" },
+        { size: 80, resid: "IconGreyed.80" },
+        { size: 128, resid: "IconGreyed.128" },
+      ],
+    };
+  }
+  try {
+    await Office.ribbon.requestUpdate({ icons });
+  } catch (error) {
+    console.error("ZipMail: Échec mise à jour icône:", error);
+  }
+}
+
 // mode: "none", "zip", "encrypted"
 function setZipMode(mode) {
   localStorage.setItem(ZIP_MODE_KEY, mode);
+  // Refleter l'état du mode Zip sur l'icone du split button ZipMail du bandeau.
+  updateRibbonIcon();
+}
+
+function disableZip(event) {
+  setZipMode("none");
+  showNotification("ZIP désactivé");
+
+  // C'est tout bon.
+  event.completed({ allowEvent: true });
 }
 
 function enableZip(event) {
