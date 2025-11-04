@@ -215,7 +215,25 @@ async function onMessageSend(event) {
     await zipWriter.add("message.htm", new zip.TextReader(bodyHtml), options);
 
     // Ajoutes toutes les pièces jointes dans le Zip.
-    const attachments = item.attachments || [];
+    let attachments = [];
+    try {
+      const result = await new Promise((resolve, reject) => {
+        item.getAttachmentsAsync((res) => {
+          if (res.status === Office.AsyncResultStatus.Succeeded) {
+            resolve(res.value);
+          } else {
+            reject(new Error("getAttachmentsAsync failed: " + (res.error?.message || "unknown")));
+          }
+        });
+      });
+      attachments = result;
+    } catch (e) {
+      console.error("ZipMail: Impossible de lire les pièces jointes:", e);
+      showNotification("Erreur critique : pièces jointes inaccessibles. Envoi bloqué.");
+      await zipWriter.close();
+      event.completed({ allowEvent: false });
+      return;
+    }
     for (const att of attachments) {
       const content = await getAttachmentContent(att.id);
       if (content.format === "base64") {
@@ -234,12 +252,23 @@ async function onMessageSend(event) {
       try {
         await removeAttachment(att.id);
       } catch (e) {
-        console.warn("Échec suppression pièce jointe:", att.id);
+        console.error("ZipMail: Échec suppression pièce jointe:", att.id, e);
+        showNotification("Erreur critique : impossible de supprimer une pièce jointe. Envoi bloqué.");
+        await zipWriter.close();
+        event.completed({ allowEvent: false });
+        return;
       }
     }
 
     // Ajoute le msg.zip
-    await addAttachmentFromBase64("msg.zip", base64Zip);
+    try {
+      await addAttachmentFromBase64("msg.zip", base64Zip);
+    } catch (e) {
+      console.error("ZipMail: Échec ajout msg.zip:", e);
+      showNotification("Erreur : impossible d’ajouter le ZIP. Envoi bloqué.");
+      event.completed({ allowEvent: false });
+      return;
+    }
 
     // Remplace le corps du mail par le message générique
     try {
