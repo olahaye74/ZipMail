@@ -28,6 +28,7 @@ Thumbs.db
 .env.production.local
 
 # VS Code settings (if personal)
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
