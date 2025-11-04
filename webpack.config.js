@@ -85,6 +85,12 @@ export default {
       template: "./src/taskpane/password.html",
       chunks: [], // pas besoin d'injecter de JS
     }),
+    new HtmlWebpackPlugin({
+      filename: "dialog-alert.html",
+      template: "./src/taskpane/dialog-alert.html",
+      chunks: [],
+      inject: false,
+    }),
 
     // Copie le manifeste et les assets
     new CopyWebpackPlugin({

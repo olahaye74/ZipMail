@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Alert</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; padding: 20px; text-align: center; }
+    button { margin-top: 15px; padding: 8px 16px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <p id="message"></p>
+  <button id="ok">OK</button>
+
+  <script>
+    Office.onReady(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const msg = urlParams.get("msg") || "Message vide";
+      document.getElementById("message").textContent = msg;
+
+      document.getElementById("ok").onclick = () => {
+        Office.context.ui.messageParent("OK");
+      };
+    });
+  </script>
+</body>
+</html>
