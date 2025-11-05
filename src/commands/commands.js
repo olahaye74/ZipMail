@@ -20,7 +20,7 @@ window.addEventListener("message", (event) => {
 });
 
 Office.actions.associate("onMessageSend", onMessageSend);
-Office.actions.associate("onMessageRead", onMessageRead);
+Office.actions.associate("onItemChanged", onItemChanged);
 Office.actions.associate("disableZip", disableZip);
 Office.actions.associate("enableZip", enableZip);
 Office.actions.associate("enableZipEncrypted", enableZipEncrypted);
@@ -193,7 +193,7 @@ async function onMessageSend(event) {
 
     // Si chiffrement activé, demande l'ajout du mot de passe à la config zip.
     if (isEncrypted) {
-      const result = await getPasswordFromDialog(zipPassword);
+      const result = await getPasswordFromDialog(zipPassword, true); // allowSave = true
       if (!result || !result.password) {
         showNotification("Mot de passe requis — envoi annulé");
         await zipWriter.close();
@@ -253,7 +253,9 @@ async function onMessageSend(event) {
         await removeAttachment(att.id);
       } catch (e) {
         console.error("ZipMail: Échec suppression pièce jointe:", att.id, e);
-        showNotification("Erreur critique : impossible de supprimer une pièce jointe. Envoi bloqué.");
+        showNotification(
+          "Erreur critique : impossible de supprimer une pièce jointe. Envoi bloqué."
+        );
         await zipWriter.close();
         event.completed({ allowEvent: false });
         return;
@@ -302,79 +304,191 @@ async function onMessageSend(event) {
 // =============================================
 // 3️⃣ Lecture du message
 // =============================================
+async function onItemChanged(event) {
+  // Attendre que l'item soit chargé
+  await Office.context.mailbox.item;
+
+  // Lancer la décompression automatique
+  await onMessageRead(event);
+}
+
+// =============================================
+// 3️⃣ Lecture du message (AUTOMATIQUE)
+// =============================================
 async function onMessageRead(event) {
   const item = Office.context.mailbox.item;
-  const msgZip = item.attachments?.find((a) => a.name === "msg.zip");
-  if (!msgZip) {
-    event.completed();
+
+  // =============================================
+  // 1️⃣ Vérifie que le message est HTML + a le meta tag
+  // =============================================
+  let bodyHtml = "";
+  try {
+    bodyHtml = await new Promise((resolve, reject) => {
+      item.body.getAsync("html", (res) => {
+        if (res.status === Office.AsyncResultStatus.Succeeded) {
+          resolve(res.value);
+        } else {
+          reject(new Error("Échec lecture corps HTML"));
+        }
+      });
+    });
+  } catch (e) {
+    console.log("ZipMail: Message non HTML ou erreur lecture corps → ignoré.", e);
+    event.completed?.();
     return;
   }
 
+  const meta = parseZipMailMeta(bodyHtml);
+  if (!meta) {
+    console.log("ZipMail: Pas de <meta name='zipmail'> → ignoré.");
+    event.completed?.();
+    return;
+  }
+
+  // =============================================
+  // 2️⃣ Vérifie la présence de msg.zip
+  // =============================================
+  let attachments = [];
+  try {
+    const result = await new Promise((resolve) => {
+      item.getAttachmentsAsync((res) => {
+        resolve(res.status === Office.AsyncResultStatus.Succeeded ? res.value : []);
+      });
+    });
+    attachments = result;
+  } catch (e) {
+    console.warn("ZipMail: getAttachmentsAsync échoué → ignoré.", e);
+    event.completed?.();
+    return;
+  }
+
+  const msgZip = attachments.find((a) => a.name === "msg.zip");
+  if (!msgZip) {
+    showNotification("Erreur ZipMail : msg.zip manquant malgré meta tag.");
+    console.error("ZipMail: Meta tag présent mais pas de msg.zip");
+    event.completed?.();
+    return;
+  }
+
+  // =============================================
+  // 3️⃣ Lecture du ZIP + mot de passe si nécessaire
+  // =============================================
+  let zipBytes;
   try {
     const zipContent = await getAttachmentContent(msgZip.id);
-    const zipBytes = base64ToUint8Array(zipContent.content);
+    zipBytes = base64ToUint8Array(zipContent.content);
+  } catch (e) {
+    showNotification("Erreur : impossible de lire msg.zip");
+    console.error("ZipMail: Échec lecture msg.zip", e);
+    event.completed?.();
+    return;
+  }
 
-    // Essai sans mot de passe
-    let reader = new zip.ZipReader(new zip.BlobReader(new Blob([zipBytes])));
-    let entries;
+  let reader = new zip.ZipReader(new zip.BlobReader(new Blob([zipBytes])));
+  let entries = [];
+
+  try {
+    entries = await reader.getEntries();
+  } catch {
+    // ZIP chiffré → demande mot de passe (SANS mémorisation)
+    const result = await getPasswordFromDialog("", false); // Pas de mot de passe par défaut
+    if (!result?.password) {
+      showNotification("Mot de passe requis pour décompresser.");
+      await reader.close();
+      event.completed?.();
+      return;
+    }
+
+    reader = new zip.ZipReader(new zip.BlobReader(new Blob([zipBytes])), {
+      password: result.password,
+    });
     try {
       entries = await reader.getEntries();
-    } catch {
-      // probablement chiffré
-      const password = await getPasswordFromDialog();
-      if (!password) {
-        await reader.close();
-        event.completed();
-        return;
-      }
-      reader = new zip.ZipReader(new zip.BlobReader(new Blob([zipBytes])), { password });
-      entries = await reader.getEntries();
-    }
-
-    // Cherches message.htm
-    const messageEntry = entries.find((e) => e.filename.toLowerCase() === "message.htm");
-    if (!messageEntry) {
-      console.log("ZipMail: Pas de message.htm — zip ignoré.");
+    } catch (err) {
+      showNotification("Mot de passe incorrect.");
+      console.error("ZipMail: Déchiffrement échoué", err);
       await reader.close();
-      event.completed();
+      event.completed?.();
       return;
     }
+  }
 
-    const htmlBody = await messageEntry.getData(new zip.TextWriter());
+  // =============================================
+  // 4️⃣ Vérifie message.htm + extraction
+  // =============================================
+  const messageEntry = entries.find((e) => e.filename.toLowerCase() === "message.htm");
+  if (!messageEntry) {
+    showNotification("Erreur : message.htm manquant dans msg.zip");
+    console.error("ZipMail: message.htm introuvable");
+    await reader.close();
+    event.completed?.();
+    return;
+  }
 
-    // Vérifie le tag ZipMail
-    const meta = parseZipMailMeta(htmlBody);
-    if (!meta) {
-      await reader.close();
-      event.completed();
-      return;
-    }
+  let originalHtml;
+  try {
+    originalHtml = await messageEntry.getData(new zip.TextWriter());
+  } catch (e) {
+    showNotification("Erreur : impossible de lire message.htm");
+    console.error("ZipMail: Échec lecture message.htm", e);
+    await reader.close();
+    event.completed?.();
+    return;
+  }
 
-    // Réinjecte le corps original
-    await new Promise((resolve) => item.body.setAsync(htmlBody, { coercionType: "html" }, resolve));
+  // =============================================
+  // 5️⃣ Réinjection corps + pièces jointes
+  // =============================================
+  try {
+    await new Promise((resolve) => {
+      item.body.setAsync(originalHtml, { coercionType: "html" }, resolve);
+    });
+  } catch (e) {
+    showNotification("Erreur : impossible de restaurer le corps");
+    console.error("ZipMail: Échec setAsync corps", e);
+    await reader.close();
+    event.completed?.();
+    return;
+  }
 
-    // Ajoute les autres fichiers comme pièce jointes
-    for (const entry of entries) {
-      if (entry.filename.toLowerCase() === "message.htm") continue;
+  // Réajout des pièces jointes
+  for (const entry of entries) {
+    if (entry.filename.toLowerCase() === "message.htm") continue;
+
+    try {
       const blob = await entry.getData(new zip.BlobWriter());
       const base64 = await blobToBase64(blob);
       await addAttachmentFromBase64(entry.filename, base64);
+    } catch (e) {
+      console.warn(`ZipMail: Échec ajout pièce jointe ${entry.filename}`, e);
+      // On continue → ne bloque pas tout
     }
-
-    // Supprime le msg.zip
-    await removeAttachment(msgZip.id);
-
-    // Active le bon mode
-    if (meta.encrypted) enableZipEncrypted({ completed: () => {} });
-    else enableZip({ completed: () => {} });
-
-    await reader.close();
-    event.completed();
-  } catch (err) {
-    console.error("ZipMail: Erreur lecture message ZipMail:", err);
-    showNotification("Erreur lecture message ZipMail : " + err.message);
-    event.completed();
   }
+
+  // =============================================
+  // 6️⃣ Suppression de msg.zip
+  // =============================================
+  try {
+    await removeAttachment(msgZip.id);
+  } catch (e) {
+    console.warn("ZipMail: Échec suppression msg.zip", e);
+    // Non critique → on continue
+  }
+
+  // =============================================
+  // Finalisation
+  // =============================================
+  await reader.close();
+
+  // Active le bon mode
+  if (meta.encrypted) {
+    setZipMode("encrypted");
+  } else {
+    setZipMode("zip");
+  }
+
+  showNotification("Message ZipMail restauré automatiquement.");
+  event.completed?.();
 }
 
 // =============================================
@@ -473,35 +587,53 @@ async function addAttachmentFromBase64(name, base64) {
   });
 }
 
+// --- Boîte de dialogue mot de passe (ENVOI + LECTURE) ---
 // --- Boîte de dialogue mot de passe ---
-async function getPasswordFromDialog(defaultPassword = "") {
+async function getPasswordFromDialog(defaultPassword = "", allowSave = false) {
   return new Promise((resolve) => {
     Office.context.ui.displayDialogAsync(
       "https://localhost:3000/password.html",
-      { height: 35, width: 25 },
+      { height: allowSave ? 18 : 15, width: 12 },
       (asyncResult) => {
+        if (asyncResult.status !== "succeeded") {
+          resolve(null);
+          return;
+        }
+
         const dialog = asyncResult.value;
 
-        // Envoie le mot de passe par postmessage
+        // Attendre ready
         const readyHandler = (arg) => {
           if (arg.message === "ready") {
-            dialog.postMessage({ type: "defaultPassword", value: defaultPassword });
+            dialog.postMessage(
+              JSON.stringify({
+                type: "defaultPassword",
+                value: defaultPassword,
+                allowSave: allowSave,
+              })
+            );
             dialog.removeEventHandler(Office.EventType.DialogMessageReceived, readyHandler);
           }
         };
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, readyHandler);
 
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
+        // Réponse finale
+        const responseHandler = (arg) => {
           dialog.close();
           try {
             const data = JSON.parse(arg.message);
-            resolve({ password: data.password, save: data.save });
+            resolve({ password: data.password, save: allowSave ? data.save : false });
           } catch {
             resolve({ password: arg.message, save: false });
           }
+        };
+
+        // Gestion fermeture
+        dialog.addEventHandler(Office.EventType.DialogEventReceived, (arg) => {
+          if (arg.error === 12006) resolve(null);
         });
 
-        dialog.addEventHandler(Office.EventType.DialogEventReceived, () => resolve(null));
+        dialog.addEventHandler(Office.EventType.DialogMessageReceived, readyHandler);
+        dialog.addEventHandler(Office.EventType.DialogMessageReceived, responseHandler);
       }
     );
   });
