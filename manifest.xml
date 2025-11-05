@@ -92,12 +92,25 @@
                     <bt:Image size="80" resid="IconGreyed.80"/>
                     <bt:Image size="128" resid="IconGreyed.128"/>
                   </Icon>
-				  <!-- CETTE LIGNE CRÉE LE SPLIT BUTTON avec sa flèche-->
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>disableZip</FunctionName>
-                  </Action>
-                  <!-- MENU DÉROULANT : Clic sur la flèche -->
+                  <!-- MENU DÉROULANT -->
                   <Items>
+                    <Item id="NoZip">
+                      <Label resid="NoZipLabel"/>
+                        <Supertip>
+                          <Title resid="NoZipTitle"/>
+                          <Description resid="NoZipDesc"/>
+                        </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="IconGreyed.16"/>
+                        <bt:Image size="32" resid="IconGreyed.32"/>
+                        <bt:Image size="64" resid="IconGreyed.64"/>
+                        <bt:Image size="80" resid="IconGreyed.80"/>
+                        <bt:Image size="128" resid="IconGreyed.128"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>disableZip</FunctionName>
+                      </Action>
+                    </Item>
                     <Item id="ZipNormal">
                       <Label resid="ZipNormalLabel"/>
                         <Supertip>
@@ -155,9 +168,13 @@
             </OfficeTab>
           </ExtensionPoint>
 
-          <ExtensionPoint xsi:type="Events">
-            <Event Type="ItemSend" FunctionExecution="synchronous" FunctionName="onMessageSend"/>
+          <ExtensionPoint xsi:type="LaunchEvent">
+            <LaunchEvents>
+              <LaunchEvent Type="OnMessageSend" FunctionExecution="asynchronous" FunctionName="onMessageSend" />
+            </LaunchEvents>
+	    <SourceLocation resid="WebViewRuntime.Url"/>
           </ExtensionPoint>
+
         </DesktopFormFactor>
       </Host>
     </Hosts>
@@ -194,6 +211,8 @@
         <bt:String id="GroupLabel" DefaultValue="ZipMail"/>
         <bt:String id="ZipMailMenuLabel" DefaultValue="ZIP"/>
         <bt:String id="ZipMailMenuTitle" DefaultValue="Compresser"/>
+        <bt:String id="NoZipLabel" DefaultValue="ZIP désactivé"/>
+        <bt:String id="NoZipTitle" DefaultValue="Pas de compression ZIP"/>
         <bt:String id="ZipNormalLabel" DefaultValue="ZIP normal"/>
         <bt:String id="ZipNormalTitle" DefaultValue="ZIP sans chiffrer"/>
         <bt:String id="ZipEncryptedLabel" DefaultValue="ZIP chiffré"/>
@@ -204,6 +223,7 @@
       <bt:LongStrings>
         <bt:String id="residAppDesc" DefaultValue="Requiert Outlook 2021 ou version ultérieure (ou Outlook Web). Ne fonctionne pas sur Outlook 2013/2016."/>
         <bt:String id="ZipMailMenuDesc" DefaultValue="Compresse le message en ZIP. Cliquez pour ZIP simple, ou sur la flèche pour chiffrer."/>
+        <bt:String id="NoZipDesc" DefaultValue="Pas de compression."/>
         <bt:String id="ZipNormalDesc" DefaultValue="Compresse sans chiffrer."/>
         <bt:String id="ZipEncryptedDesc" DefaultValue="Compresse avec mot de passe (AES-256)."/>
         <bt:String id="OptionsDesc" DefaultValue="Niveau de compression, mot de passe, prévisualisation..."/>
