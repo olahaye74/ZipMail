@@ -618,6 +618,7 @@ async function getPasswordFromDialog(defaultPassword = "", allowSave = false) {
 
         // Réponse finale
         const responseHandler = (arg) => {
+          if (arg.message === "ready") return; // ← CRUCIAL
           dialog.close();
           try {
             const data = JSON.parse(arg.message);
