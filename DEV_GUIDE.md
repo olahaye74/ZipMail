@@ -63,7 +63,7 @@ Your add-in files will now be served at: [https://localhost:3000](https://localh
 2. Click View all Outlook settings → Mail → Customize actions.
 3. Scroll down and click View add-ins.
 4. Choose Upload My Add-in → Add from file.
-5. Select your local `manifest.xml` file.
+5. Select your local `manifest.json` file.
 Outlook will confirm:
 > “Your add-in has been added successfully.”
 
