@@ -1,0 +1,400 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json#",
+    "manifestVersion": "1.17",
+    "version": "1.0.0",
+    "id": "96c84036-c670-4cd9-b89d-b00490f34423",
+    "localizationInfo": {
+        "defaultLanguageTag": "fr-fr"
+    },
+    "developer": {
+        "name": "ZipMail",
+        "websiteUrl": "https://github.com/olahaye74/ZipMail",
+        "privacyUrl": "https://github.com/olahaye74/ZipMail",
+        "termsOfUseUrl": "https://github.com/olahaye74/ZipMail"
+    },
+    "name": {
+        "short": "ZipMail",
+        "full": "ZipMail"
+    },
+    "description": {
+        "short": "Compresse les messages en ZIP",
+        "full": "Compresse les messages en ZIP"
+    },
+    "icons": {
+        "outline": "assets/icon-zip-64.png",
+        "color": "assets/icon-zip-128.png"
+    },
+    "accentColor": "#230201",
+    "validDomains": [
+        "https://localhost:3000"
+    ],
+    "showLoadingIndicator": false,
+    "isFullScreen": false,
+    "defaultBlockUntilAdminAction": false,
+    "authorization": {
+        "permissions": {
+            "resourceSpecific": [
+                {
+                    "name": "MailboxItem.ReadWrite.User",
+                    "type": "Delegated"
+                }
+            ]
+        }
+    },
+    "extensions": [
+        {
+            "requirements": {
+                "capabilities": [
+                    {
+                        "name": "Mailbox",
+                        "minVersion": "1.15"
+                    }
+                ],
+                "scopes": [
+                    "mail"
+                ]
+            },
+            "runtimes": [
+                {
+                    "requirements": {
+                        "capabilities": [
+                            {
+                                "name": "Mailbox",
+                                "minVersion": "1.5"
+                            },
+                            {
+                                "name": "RibbonApi",
+                                "minVersion": "1.1"
+                            }
+                        ],
+                        "formFactors": [
+                            "desktop"
+                        ]
+                    },
+                    "id": "runtime_1",
+                    "type": "general",
+                    "code": {
+                        "page": "https://localhost:3000/commands.html",
+                        "script": "https://localhost:3000/commands.bundle.js"
+                    },
+                    "lifetime": "short",
+                    "actions": [
+                        {
+                            "id": "disableZip",
+                            "type": "executeFunction",
+                            "displayName": "disableZip",
+                            "multiselect": false,
+                            "supportsNoItemContext": false
+                        },
+                        {
+                            "id": "enableZip",
+                            "type": "executeFunction",
+                            "displayName": "enableZip",
+                            "multiselect": false,
+                            "supportsNoItemContext": false
+                        },
+                        {
+                            "id": "enableZipEncrypted",
+                            "type": "executeFunction",
+                            "displayName": "enableZipEncrypted",
+                            "multiselect": false,
+                            "supportsNoItemContext": false
+                        },
+                        {
+                            "id": "onMessageSend",
+                            "type": "executeFunction",
+                            "displayName": "onMessageSend",
+                            "multiselect": false,
+                            "supportsNoItemContext": false
+                        }
+                    ]
+                },
+                {
+                    "requirements": {
+                        "capabilities": [
+                            {
+                                "name": "Mailbox",
+                                "minVersion": "1.5"
+                            },
+                            {
+                                "name": "RibbonApi",
+                                "minVersion": "1.1"
+                            }
+                        ],
+                        "formFactors": [
+                            "desktop"
+                        ]
+                    },
+                    "id": "runtime_2",
+                    "type": "general",
+                    "code": {
+                        "page": "https://localhost:3000/taskpane.html"
+                    },
+                    "lifetime": "short",
+                    "actions": [
+                        {
+                            "id": "action_1",
+                            "type": "openPage",
+                            "displayName": "action_1",
+                            "pinnable": false,
+                            "view": "view_1",
+                            "multiselect": false,
+                            "supportsNoItemContext": false
+                        }
+                    ]
+                }
+            ],
+            "ribbons": [
+                {
+                    "requirements": {
+                        "capabilities": [
+                            {
+                                "name": "Mailbox",
+                                "minVersion": "1.5"
+                            },
+                            {
+                                "name": "RibbonApi",
+                                "minVersion": "1.1"
+                            }
+                        ],
+                        "scopes": [
+                            "mail"
+                        ],
+                        "formFactors": [
+                            "desktop"
+                        ]
+                    },
+                    "contexts": [
+                        "mailCompose"
+                    ],
+                    "tabs": [
+                        {
+                            "builtInTabId": "TabDefault",
+                            "groups": [
+                                {
+                                    "id": "msgComposeGroup",
+                                    "label": "ZipMail",
+                                    "controls": [
+                                        {
+                                            "id": "ZipMailMenu",
+                                            "type": "menu",
+                                            "label": "ZIP",
+                                            "icons": [
+                                                {
+                                                    "size": 16,
+                                                    "url": "https://localhost:3000/assets/icon-zip-greyed-16.png"
+                                                },
+                                                {
+                                                    "size": 32,
+                                                    "url": "https://localhost:3000/assets/icon-zip-greyed-32.png"
+                                                },
+                                                {
+                                                    "size": 64,
+                                                    "url": "https://localhost:3000/assets/icon-zip-greyed-64.png"
+                                                },
+                                                {
+                                                    "size": 80,
+                                                    "url": "https://localhost:3000/assets/icon-zip-greyed-80.png"
+                                                },
+                                                {
+                                                    "size": 128,
+                                                    "url": "https://localhost:3000/assets/icon-zip-greyed-128.png"
+                                                }
+                                            ],
+                                            "supertip": {
+                                                "title": "Compresser",
+                                                "description": "Compresse le message en ZIP. Cliquez pour ZIP simple, ou sur la flèche pour chiffrer."
+                                            },
+                                            "items": [
+                                                {
+                                                    "id": "NoZip",
+                                                    "type": "menuItem",
+                                                    "label": "ZIP désactivé",
+                                                    "icons": [
+                                                        {
+                                                            "size": 16,
+                                                            "url": "https://localhost:3000/assets/icon-zip-greyed-16.png"
+                                                        },
+                                                        {
+                                                            "size": 32,
+                                                            "url": "https://localhost:3000/assets/icon-zip-greyed-32.png"
+                                                        },
+                                                        {
+                                                            "size": 64,
+                                                            "url": "https://localhost:3000/assets/icon-zip-greyed-64.png"
+                                                        },
+                                                        {
+                                                            "size": 80,
+                                                            "url": "https://localhost:3000/assets/icon-zip-greyed-80.png"
+                                                        },
+                                                        {
+                                                            "size": 128,
+                                                            "url": "https://localhost:3000/assets/icon-zip-greyed-128.png"
+                                                        }
+                                                    ],
+                                                    "supertip": {
+                                                        "title": "Pas de compression ZIP",
+                                                        "description": "Pas de compression."
+                                                    },
+                                                    "actionId": "disableZip",
+                                                    "enabled": true,
+                                                    "overriddenByRibbonApi": false
+                                                },
+                                                {
+                                                    "id": "ZipNormal",
+                                                    "type": "menuItem",
+                                                    "label": "ZIP normal",
+                                                    "icons": [
+                                                        {
+                                                            "size": 16,
+                                                            "url": "https://localhost:3000/assets/icon-zip-16.png"
+                                                        },
+                                                        {
+                                                            "size": 32,
+                                                            "url": "https://localhost:3000/assets/icon-zip-32.png"
+                                                        },
+                                                        {
+                                                            "size": 64,
+                                                            "url": "https://localhost:3000/assets/icon-zip-64.png"
+                                                        },
+                                                        {
+                                                            "size": 80,
+                                                            "url": "https://localhost:3000/assets/icon-zip-80.png"
+                                                        },
+                                                        {
+                                                            "size": 128,
+                                                            "url": "https://localhost:3000/assets/icon-zip-128.png"
+                                                        }
+                                                    ],
+                                                    "supertip": {
+                                                        "title": "ZIP sans chiffrer",
+                                                        "description": "Compresse sans chiffrer."
+                                                    },
+                                                    "actionId": "enableZip",
+                                                    "enabled": true,
+                                                    "overriddenByRibbonApi": false
+                                                },
+                                                {
+                                                    "id": "ZipEncrypted",
+                                                    "type": "menuItem",
+                                                    "label": "ZIP chiffré",
+                                                    "icons": [
+                                                        {
+                                                            "size": 16,
+                                                            "url": "https://localhost:3000/assets/icon-zip-locked-16.png"
+                                                        },
+                                                        {
+                                                            "size": 32,
+                                                            "url": "https://localhost:3000/assets/icon-zip-locked-32.png"
+                                                        },
+                                                        {
+                                                            "size": 64,
+                                                            "url": "https://localhost:3000/assets/icon-zip-locked-64.png"
+                                                        },
+                                                        {
+                                                            "size": 80,
+                                                            "url": "https://localhost:3000/assets/icon-zip-locked-80.png"
+                                                        },
+                                                        {
+                                                            "size": 128,
+                                                            "url": "https://localhost:3000/assets/icon-zip-locked-128.png"
+                                                        }
+                                                    ],
+                                                    "supertip": {
+                                                        "title": "ZIP avec mot de passe",
+                                                        "description": "Compresse avec mot de passe (AES-256)."
+                                                    },
+                                                    "actionId": "enableZipEncrypted",
+                                                    "enabled": true,
+                                                    "overriddenByRibbonApi": false
+                                                },
+                                                {
+                                                    "id": "Options",
+                                                    "type": "menuItem",
+                                                    "label": "Paramètres ZipMail",
+                                                    "icons": [
+                                                        {
+                                                            "size": 16,
+                                                            "url": "https://localhost:3000/assets/icon-options-16.png"
+                                                        },
+                                                        {
+                                                            "size": 32,
+                                                            "url": "https://localhost:3000/assets/icon-options-32.png"
+                                                        },
+                                                        {
+                                                            "size": 64,
+                                                            "url": "https://localhost:3000/assets/icon-options-64.png"
+                                                        },
+                                                        {
+                                                            "size": 80,
+                                                            "url": "https://localhost:3000/assets/icon-options-80.png"
+                                                        },
+                                                        {
+                                                            "size": 128,
+                                                            "url": "https://localhost:3000/assets/icon-options-128.png"
+                                                        }
+                                                    ],
+                                                    "supertip": {
+                                                        "title": "Options",
+                                                        "description": "Niveau de compression, mot de passe, prévisualisation..."
+                                                    },
+                                                    "actionId": "action_1",
+                                                    "enabled": true,
+                                                    "overriddenByRibbonApi": false
+                                                }
+                                            ],
+                                            "overriddenByRibbonApi": false
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "autoRunEvents": [
+                {
+                    "requirements": {
+                        "capabilities": [
+                            {
+                                "name": "Mailbox",
+                                "minVersion": "1.5"
+                            },
+                            {
+                                "name": "RibbonApi",
+                                "minVersion": "1.1"
+                            }
+                        ],
+                        "scopes": [
+                            "mail"
+                        ],
+                        "formFactors": [
+                            "desktop"
+                        ]
+                    },
+                    "events": [
+                        {
+                            "type": "messageSending",
+                            "actionId": "onMessageSend"
+                        }
+                    ]
+                }
+            ],
+            "alternates": [
+                {
+                    "alternateIcons": {
+                        "icon": {
+                            "size": 64,
+                            "url": "https://localhost:3000/assets/icon-zip-64.png"
+                        },
+                        "highResolutionIcon": {
+                            "size": 64,
+                            "url": "https://localhost:3000/assets/icon-zip-128.png"
+                        }
+                    }
+                }
+            ],
+            "audienceClaimUrl": "https://localhost:3000/taskpane.html"
+        }
+    ]
+}

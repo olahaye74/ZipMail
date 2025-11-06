@@ -47,7 +47,7 @@ Prochaines étapes :
       npm run dev-server
 
 2️⃣  Ouvrir Outlook et charger le complément via :
-      manifest.xml
+      manifest.json
 `;
 
 // Ajoute un conseil spécifique pour macOS

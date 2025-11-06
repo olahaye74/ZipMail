@@ -51,6 +51,7 @@ export default {
     clean: true,
     path: path.resolve(__dirname, "dist"),
     filename: "[name].bundle.js",
+    // publicPath: 'auto', - inutile car déjà mis à auto par défaut
   },
 
   devServer: {
@@ -95,7 +96,7 @@ export default {
     // Copie le manifeste et les assets
     new CopyWebpackPlugin({
       patterns: [
-        { from: "manifest.xml", to: "[name][ext]" },
+        { from: "manifest.json", to: "[name][ext]" },
         { from: "assets", to: "assets" },
       ],
     }),
