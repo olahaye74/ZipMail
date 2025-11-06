@@ -228,10 +228,11 @@ async function onMessageSend(event) {
       });
       attachments = result;
     } catch (e) {
-      console.error("ZipMail: Impossible de lire les pièces jointes:", e);
+      const message = "ZipMail: Impossible de lire les pièces jointes: " + e;
+      console.error(message, e);
       showNotification("Erreur critique : pièces jointes inaccessibles. Envoi bloqué.");
       await zipWriter.close();
-      event.completed({ allowEvent: false });
+      event.completed({ allowEvent: false, errorMessage: message });
       return;
     }
     for (const att of attachments) {
@@ -252,12 +253,13 @@ async function onMessageSend(event) {
       try {
         await removeAttachment(att.id);
       } catch (e) {
-        console.error("ZipMail: Échec suppression pièce jointe:", att.id, e);
+		const message = "ZipMail: Échec suppression pièce jointe: " + att.name;
+        console.error(message, e);
         showNotification(
           "Erreur critique : impossible de supprimer une pièce jointe. Envoi bloqué."
         );
         await zipWriter.close();
-        event.completed({ allowEvent: false });
+        event.completed({ allowEvent: false, errorMessage: message });
         return;
       }
     }
@@ -266,9 +268,10 @@ async function onMessageSend(event) {
     try {
       await addAttachmentFromBase64("msg.zip", base64Zip);
     } catch (e) {
-      console.error("ZipMail: Échec ajout msg.zip:", e);
+      const message = "ZipMail: Échec ajout msg.zip:" + e;
+      console.error(message, e);
       showNotification("Erreur : impossible d’ajouter le ZIP. Envoi bloqué.");
-      event.completed({ allowEvent: false });
+      event.completed({ allowEvent: false, errorMessage: message });
       return;
     }
 
@@ -292,12 +295,13 @@ async function onMessageSend(event) {
       const errorMsg = `Erreur modèle : ${err.message}`;
       showNotification(errorMsg);
       console.error(errorMsg, err);
-      event.completed({ allowEvent: false });
+      event.completed({ allowEvent: false, errorMessage: errorMsg });
     }
   } catch (err) {
+    const message = "ZipMail: " + err.message;
     console.error("Erreur ZipMail:", err);
     showNotification("Erreur ZipMail : " + err.message);
-    event.completed({ allowEvent: false });
+    event.completed({ allowEvent: false, errorMessage: message });
   }
 }
 
