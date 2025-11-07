@@ -669,7 +669,6 @@ async function addAttachmentFromBase64(name, base64) {
 }
 
 // --- Password dialog (SEND & READ) ---
-// --- Password dialog (SEND & READ) ---
 // Opens a dialog and returns { password: string } or null if cancelled/empty.
 async function getPasswordFromDialog() {
   return new Promise((resolve) => {
@@ -686,25 +685,15 @@ async function getPasswordFromDialog() {
 
         // Response handler: parse JSON or fallback to raw string.
         const responseHandler = (arg) => {
-          // ignore "ready" handshake (if ever sent) or empty messages here
-          if (!arg?.message || arg.message === "ready") return;
+          // arg.message est déjà un objet si envoyé avec { password }
+          const data = typeof arg.message === "object" ? arg.message : null;
 
-          try {
-            // Try parse JSON
-            const data = JSON.parse(arg.message);
-
-            // If data.password is present and non-empty string -> return it
-            if (data && typeof data.password === "string" && data.password.length > 0) {
-              cleanupAndResolve({ password: data.password });
-            } else {
-              // Empty password (or missing) => treat as cancel/no-password
-              cleanupAndResolve(null);
-            }
-          } catch (e) {
-            // Not JSON: treat as raw string
-            const raw = String(arg.message || "");
-            if (raw.length > 0) cleanupAndResolve({ password: raw });
-            else cleanupAndResolve(null);
+          // If data.password is present and non-empty string -> return it
+          if (data && typeof data.password === "string" && data.password.length > 0) {
+            cleanupAndResolve({ password: data.password });
+          } else {
+            // Empty password (or missing) => treat as cancel/no-password
+            cleanupAndResolve(null);
           }
         };
 
