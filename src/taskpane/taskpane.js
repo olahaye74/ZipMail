@@ -11,7 +11,6 @@ Office.onReady(() => {
 
   // Charge les valeurs
   levelSelect.value = localStorage.getItem("zipLevel") || "6";
-  levelSelect.value = localStorage.getItem("zipLevel") || "6";
 
   // Sauvegarde en temps réel
   levelSelect.onchange = () => {
