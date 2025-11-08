@@ -10,6 +10,7 @@ Office.onReady(() => {
   console.log("ZipMail commands.js chargé");
 });
 
+// Get values from taskpane (options)
 window.addEventListener("message", (event) => {
   if (event.origin !== "https://localhost:3000") return;
   const [type, key, value] = event.data.split(":");
