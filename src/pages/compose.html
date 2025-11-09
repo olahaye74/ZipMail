@@ -12,12 +12,12 @@
   <!-- Tu peux l'installer via npm et le servir depuis /node_modules -->
   <script type="module">
     import * as zip from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js@latest/index.min.js";
-    window.zip = zip; // rendre accessible à commands.js
+    window.zip = zip; // rendre accessible à compose.js
     console.log("[ZipMail] zip.js chargé depuis CDN (latest)");
   </script>
 
   <!-- Ton script principal -->
-  <script type="text/javascript" src="commands.bundle.js"></script>
+  <script type="text/javascript" src="compose.bundle.js"></script>
 
   <!-- Sécurité : autorise localhost pour le dev -->
   <meta http-equiv="Content-Security-Policy" 

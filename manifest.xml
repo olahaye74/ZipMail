@@ -64,15 +64,20 @@
           <!-- For more information, see https://learn.microsoft.com/office/dev/add-ins/outlook/autolaunch -->
           <Runtimes>
             <!-- HTML file including reference to or inline JavaScript event handlers. This is used by Outlook on the web and on Mac, and in new Outlook on Windows. -->
-            <Runtime resid="WebViewRuntime.Url"> <!-- /src/commands/commands.html -->
+            <Runtime resid="ReadRuntime.Url"> <!-- /src/pages/compose.html -->
               <!-- JavaScript file containing event handlers. This is used by classic Outlook on Windows. -->
-              <Override type="javascript" resid="JSRuntime.Url"/> 
-              <!-- /src/commands/commands.js -->
+              <Override type="javascript" resid="ReadJS.Url"/> <!-- /src/code/compose.bundle.js -->
             </Runtime>
+
+            <Runtime resid="ComposeRuntime.Url"> <!-- /src/pages/compose.html -->
+              <!-- JavaScript file containing event handlers. This is used by classic Outlook on Windows. -->
+              <Override type="javascript" resid="ComposeJS.Url"/> <!-- /src/code/compose.bundle.js -->
+            </Runtime>
+
           </Runtimes>
 
         <DesktopFormFactor>
-          <FunctionFile resid="WebViewRuntime.Url"/>
+          <FunctionFile resid="CommandsRuntime.Url"/>
 
           <!-- BOUTON ZIP DANS COMPOSE -->
           <ExtensionPoint xsi:type="MessageComposeCommandSurface">
@@ -175,6 +180,42 @@
             </LaunchEvents>
 	    <SourceLocation resid="WebViewRuntime.Url"/>
           </ExtensionPoint>
+	  
+	  <!-- ZipMail Menu for options setup in main window -->
+          <ExtensionPoint xsi:type="MessageReadCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="msgReadGroup">
+                <Label resid="GroupLabel"/>
+                <Control xsi:type="Menu" id="ZipMailReadMenu">
+                  <Label resid="ZipMailMenuLabel"/>
+                  <Supertip>
+                    <Title resid="ZipMailMenuTitle"/>
+                    <Description resid="ZipMailMenuDesc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="IconGreyed.16"/>
+                    <bt:Image size="32" resid="IconGreyed.32"/>
+                    <bt:Image size="64" resid="IconGreyed.64"/>
+                  </Icon>
+                  <Items>
+                    <Item id="ReadOptions">
+                      <Label resid="OptionsLabel"/>
+                      <Supertip>
+                        <Title resid="OptionsTitle"/>
+                        <Description resid="OptionsDesc"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="IconOptions.16"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>openOptionsDialog</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
 
         </DesktopFormFactor>
       </Host>
@@ -201,12 +242,14 @@
         <bt:Image id="IconOptions.32" DefaultValue="https://localhost:3000/assets/icon-options-32.png"/>
         <bt:Image id="IconOptions.64" DefaultValue="https://localhost:3000/assets/icon-options-64.png"/>
         <bt:Image id="IconOptions.80" DefaultValue="https://localhost:3000/assets/icon-options-80.png"/>
-        <bt:Image id="IconOptions.128" DefaultValue="https://localhost:3000/assets/icon-options-128.png"/>
+	<bt:Image id="IconOptions.128" DefaultValue="https://localhost:3000/assets/icon-options-128.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
-        <bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/>
-        <bt:Url id="JSRuntime.Url" DefaultValue="https://localhost:3000/commands.bundle.js"/>
+	<bt:Url id="CommandsRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/> <!-- Prior 2024 -->
+	<bt:Url id="ReadRuntime.Url" DefaultValue="https://localhost:3000/read.html"/>
+        <bt:Url id="ComposeJS.Url" DefaultValue="https://localhost:3000/compose.bundle.js"/>
+        <bt:Url id="ReadJS.Url" DefaultValue="https://localhost:3000/read.bundle.js"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="ZipMail"/>

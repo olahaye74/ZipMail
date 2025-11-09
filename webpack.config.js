@@ -43,8 +43,10 @@ export default {
   mode: "development",
 
   entry: {
-    taskpane: "./src/taskpane/taskpane.js",
-    commands: "./src/commands/commands.js",
+    taskpane: "./src/code/taskpane.js",
+    compose: "./src/code/compose.js",
+    read: "./src/code/read.js",
+    options: "./src/code/options.js",
   },
 
   output: {
@@ -73,22 +75,34 @@ export default {
     // Génère les fichiers HTML pour chaque entrée
     new HtmlWebpackPlugin({
       filename: "taskpane.html",
-      template: "./src/taskpane/taskpane.html",
+      template: "./src/pages/taskpane.html",
       chunks: ["taskpane"],
     }),
     new HtmlWebpackPlugin({
-      filename: "commands.html",
-      template: "./src/commands/commands.html",
+      filename: "compose.html",
+      template: "./src/pages/compose.html",
       chunks: ["commands"],
     }),
     new HtmlWebpackPlugin({
+      filename: "read.html",
+      template: "./src/pages/read.html",
+      chunks: ["commands"],
+    }),
+    new HtmlWebpackPlugin({
+      filename: "options.html",
+      template: "./src/pages/options.html",
+      chunks: [],
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
       filename: "password.html",
-      template: "./src/taskpane/password.html",
+      template: "./src/pages/password.html",
       chunks: [], // pas besoin d'injecter de JS
+      inject: false,
     }),
     new HtmlWebpackPlugin({
       filename: "dialog-alert.html",
-      template: "./src/taskpane/dialog-alert.html",
+      template: "./src/pages/dialog-alert.html",
       chunks: [],
       inject: false,
     }),
@@ -96,7 +110,7 @@ export default {
     // Copie le manifeste et les assets
     new CopyWebpackPlugin({
       patterns: [
-        { from: "manifest.json", to: "[name][ext]" },
+        { from: "manifest.xml", to: "[name][ext]" },
         { from: "assets", to: "assets" },
       ],
     }),

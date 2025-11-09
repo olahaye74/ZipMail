@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <script src="options.bundle.js"></script>
+</head>
+<body>
+  <h2>Options ZipMail</h2>
+  <label>Décompression à la lecture :
+    <select id="autoUnzip">
+      <option value="never">Jamais</option>
+      <option value="if-unencrypted">Oui si non chiffré</option>
+      <option value="always">Toujours</option>
+    </select>
+  </label>
+  <button id="save">Sauvegarder</button>
+  <span id="saved" style="color:green;margin-left:10px;opacity:0">Sauvegardé</span>
+</body>
+</html>
