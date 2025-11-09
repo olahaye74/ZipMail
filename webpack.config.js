@@ -71,8 +71,14 @@ export default {
     },
   },
 
+  // Génère les fichiers HTML pour chaque entrée
   plugins: [
-    // Génère les fichiers HTML pour chaque entrée
+    // Compatibilité pour les vieux outlook avant 2024
+    new HtmlWebpackPlugin({
+      filename: "commands.html",
+      template: "./src/pages/commands.html",
+      chunks: ["read", "compose"],
+    }),
     new HtmlWebpackPlugin({
       filename: "taskpane.html",
       template: "./src/pages/taskpane.html",
@@ -81,12 +87,12 @@ export default {
     new HtmlWebpackPlugin({
       filename: "compose.html",
       template: "./src/pages/compose.html",
-      chunks: ["commands"],
+      chunks: ["compose"],
     }),
     new HtmlWebpackPlugin({
       filename: "read.html",
       template: "./src/pages/read.html",
-      chunks: ["commands"],
+      chunks: ["read"],
     }),
     new HtmlWebpackPlugin({
       filename: "options.html",
