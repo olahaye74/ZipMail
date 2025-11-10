@@ -56,6 +56,7 @@ async function onItemRead(event) {
     zmutils.showNotification(
       "msg.zip manquant malgré meta tag. Filtré par antivirus? => Impossible d'afficher le mail."
     );
+    console.error("Failed to find msg.zip. Antivirus filtered? Can't decode mail.");
     event.completed?.();
     return;
   }
