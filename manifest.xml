@@ -177,8 +177,9 @@
             <LaunchEvents>
               <!-- <LaunchEvent Type="OnMessageSend" FunctionExecution="asynchronous" FunctionName="onMessageSend" /> -->
               <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSend" />
+			  <LaunchEvent Type="OnNewMessageCompose" FunctionName="onMessageCompose"/>
             </LaunchEvents>
-	    <SourceLocation resid="WebViewRuntime.Url"/>
+	        <SourceLocation resid="ComposeJS.Url"/>
           </ExtensionPoint>
 	  
 	  <!-- ZipMail Menu for options setup in main window -->
@@ -242,12 +243,12 @@
         <bt:Image id="IconOptions.32" DefaultValue="https://localhost:3000/assets/icon-options-32.png"/>
         <bt:Image id="IconOptions.64" DefaultValue="https://localhost:3000/assets/icon-options-64.png"/>
         <bt:Image id="IconOptions.80" DefaultValue="https://localhost:3000/assets/icon-options-80.png"/>
-	<bt:Image id="IconOptions.128" DefaultValue="https://localhost:3000/assets/icon-options-128.png"/>
+        <bt:Image id="IconOptions.128" DefaultValue="https://localhost:3000/assets/icon-options-128.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
-	<bt:Url id="CommandsRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/> <!-- Prior 2024 -->
-	<bt:Url id="ReadRuntime.Url" DefaultValue="https://localhost:3000/read.html"/>
+        <bt:Url id="CommandsRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/> <!-- Prior 2024 -->
+        <bt:Url id="ReadRuntime.Url" DefaultValue="https://localhost:3000/read.html"/>
         <bt:Url id="ComposeJS.Url" DefaultValue="https://localhost:3000/compose.bundle.js"/>
         <bt:Url id="ReadJS.Url" DefaultValue="https://localhost:3000/read.bundle.js"/>
       </bt:Urls>

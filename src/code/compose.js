@@ -22,6 +22,7 @@ window.addEventListener("message", (event) => {
 });
 
 Office.actions.associate("onMessageSend", onMessageSend);
+Office.actions.associate("onMessageCompose", onMessageCompose);
 Office.actions.associate("disableZip", disableZip);
 Office.actions.associate("enableZip", enableZip);
 Office.actions.associate("enableZipEncrypted", enableZipEncrypted);
@@ -150,17 +151,43 @@ async function getZipMode() {
 async function setZipMode(mode) {
   try {
     const ok = await setCustomProperty(ZIP_MODE_KEY, mode);
-    if (ok) {
-      try {
-        await updateRibbonIcon(mode);
-      } catch (e) {
-        // updateRibbonIcon failing should not prevent mode being considered saved
-        console.warn("ZipMail: updateRibbonIcon failed after setZipMode:", e);
+    if (!ok) return false;
+
+    // === AJOUT DE LA MÉTA DANS LE CORPS (HTML SEULEMENT) ===
+    const bodyType = await new Promise((resolve) => {
+      Office.context.mailbox.item.body.getTypeAsync((res) => resolve(res.value));
+    });
+
+    if (bodyType === Office.MailboxEnums.BodyType.Html) {
+      const metaContent = buildZipMailMeta({
+        version: "1.0",
+        encrypted: mode === "encrypted",
+        timestamp: new Date().toISOString(),
+      });
+      const metaTag = `<meta name="zipmail" content="${metaContent}">`;
+
+      let bodyHtml = await new Promise((resolve) =>
+        Office.context.mailbox.item.body.getAsync("html", (res) => resolve(res.value))
+      );
+
+      // Remplace ou ajoute la meta
+      const metaRegex = /<meta\s+name=["']zipmail["'][^>]*>/gi;
+      if (metaRegex.test(bodyHtml)) {
+        bodyHtml = bodyHtml.replace(metaRegex, metaTag);
+      } else if (bodyHtml.includes("<head>")) {
+        bodyHtml = bodyHtml.replace("<head>", `<head>${metaTag}`);
+      } else {
+        bodyHtml = `<head>${metaTag}</head>${bodyHtml}`;
       }
-      return true;
-    } else {
-      return false;
+
+      await new Promise((resolve) =>
+        Office.context.mailbox.item.body.setAsync(bodyHtml, { coercionType: "html" }, resolve)
+      );
     }
+    // Texte → pas de meta
+
+    await updateRibbonIcon(mode);
+    return true;
   } catch (e) {
     console.error("ZipMail: setZipMode exception:", e);
     return false;
@@ -211,7 +238,7 @@ async function disableZip(event) {
   try {
     await setZipMode("none");
     await clearPasswordStorage();
-    zmutils.showNotification("ZIP désactivé. Mode: " + await getZipMode());
+    zmutils.showNotification("ZIP désactivé. Mode: " + (await getZipMode()));
     event.completed({ allowEvent: true });
   } catch (e) {
     console.error("Erreur disableZip:", e);
@@ -222,7 +249,7 @@ async function disableZip(event) {
 async function enableZip(event) {
   try {
     await setZipMode("zip");
-    zmutils.showNotification("ZIP activé. Mode: " + await getZipMode());
+    zmutils.showNotification("ZIP activé. Mode: " + (await getZipMode()));
     await clearPasswordStorage(); // We don't need a password. Clear it if we switched from encryted to normal
     event.completed({ allowEvent: true });
   } catch (e) {
@@ -269,10 +296,24 @@ async function savePasswordToStorage(password) {
     if (!password) return false;
 
     // generate AES-GCM key
-    const key = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+    const key = await crypto.subtle.generateKey(
+      {
+        name: "AES-GCM",
+        length: 256,
+      },
+      true,
+      ["encrypt", "decrypt"]
+    );
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const encoded = new TextEncoder().encode(password);
-    const cipherBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded);
+    const cipherBuffer = await crypto.subtle.encrypt(
+      {
+        name: "AES-GCM",
+        iv,
+      },
+      key,
+      encoded
+    );
 
     // export key as JWK (JSON) so we can import it back in another context
     const jwk = await crypto.subtle.exportKey("jwk", key);
@@ -315,7 +356,15 @@ async function getPasswordFromStorage() {
     if (!stored || !stored.key || !stored.cipher || !stored.iv) return null;
 
     // import key from JWK
-    const key = await crypto.subtle.importKey("jwk", stored.key, { name: "AES-GCM" }, true, ["decrypt"]);
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      stored.key,
+      {
+        name: "AES-GCM",
+      },
+      true,
+      ["decrypt"]
+    );
     const cipher = arrayToU8(stored.cipher).buffer;
     const iv = arrayToU8(stored.iv);
 
@@ -359,7 +408,7 @@ async function enableZipEncrypted(event) {
 
     await savePasswordToStorage(password);
     await setZipMode("encrypted");
-    zmutils.showNotification("ZIP chiffré activé. Mode: " + await getZipMode());
+    zmutils.showNotification("ZIP chiffré activé. Mode: " + (await getZipMode()));
     event.completed({ allowEvent: true });
   } catch (e) {
     console.error("enableZipEncrypted error:", e);
@@ -384,16 +433,30 @@ async function onMessageSend(event) {
   const item = Office.context.mailbox.item;
 
   try {
-    let bodyHtml = await new Promise((resolve) =>
-      item.body.getAsync("html", (res) => resolve(res.value))
-    );
+    // === 1. Récupère le corps (texte ou HTML) ===
+    const bodyType = await new Promise((resolve) => {
+      item.body.getTypeAsync((res) => resolve(res.value));
+    });
 
-    const metaTag = `<meta name="zipmail" content="${buildZipMailMeta({ version: "1.0", encrypted: isEncrypted, timestamp: new Date().toISOString() })}">`;
-    bodyHtml = bodyHtml.includes("<head>") ? bodyHtml.replace("<head>", `<head>${metaTag}`) : `<head>${metaTag}</head>${bodyHtml}`;
+    let bodyContent, filename;
+    if (bodyType === Office.MailboxEnums.BodyType.Text) {
+      bodyContent = await new Promise((resolve) =>
+        item.body.getAsync("text", (res) => resolve(res.value))
+      );
+      filename = "message.txt";
+    } else {
+      let bodyHtml = await new Promise((resolve) =>
+        item.body.getAsync("html", (res) => resolve(res.value))
+      );
+      // Supprime la meta existante (elle sera dans ZipMailMessage.html)
+      bodyHtml = bodyHtml.replace(/<meta\s+name=["']zipmail["'][^>]*>/gi, "");
+      bodyContent = bodyHtml;
+      filename = "message.htm";
+    }
 
+    // === 2. Prépare le ZIP ===
     const blobWriter = new zip.BlobWriter("application/zip");
     const zipWriter = new zip.ZipWriter(blobWriter);
-
     let options = { compression: "DEFLATE", compressionOptions: { level: zipLevel } };
 
     if (isEncrypted) {
@@ -407,9 +470,14 @@ async function onMessageSend(event) {
       options = { ...options, password, encryptionStrength: 3 };
     }
 
-    await zipWriter.add("message.htm", new zip.TextReader(bodyHtml), options);
+    // === 3. Ajoute le message (texte ou HTML) ===
+    await zipWriter.add(filename, new zip.TextReader(bodyContent), options);
+
+    // === 4. Ajoute les pièces jointes ===
     const attachments = await new Promise((resolve, reject) => {
-      item.getAttachmentsAsync((res) => res.status === Office.AsyncResultStatus.Succeeded ? resolve(res.value) : reject(res.error));
+      item.getAttachmentsAsync((res) =>
+        res.status === Office.AsyncResultStatus.Succeeded ? resolve(res.value) : reject(res.error)
+      );
     });
 
     for (const att of attachments) {
@@ -419,32 +487,73 @@ async function onMessageSend(event) {
       await zipWriter.add(att.name, new zip.BlobReader(blob), options);
     }
 
+    // === 5. Ajoute ZipMailMessage.html avec la même meta ===
+    const metaContent = buildZipMailMeta({
+      version: "1.0",
+      encrypted: isEncrypted,
+      timestamp: new Date().toISOString(),
+    });
+
+    let genericHTML = await fetch("https://localhost:3000/assets/ZipMailMessage.html").then((r) =>
+      r.text()
+    );
+    genericHTML = genericHTML.replace(
+      /<meta\s+name=["']zipmail["'][^>]*>/gi,
+      `<meta name="zipmail" content="${metaContent}">`
+    );
+    if (!/<meta\s+name=["']zipmail["']/i.test(genericHTML)) {
+      genericHTML = genericHTML.replace(
+        "<head>",
+        `<head><meta name="zipmail" content="${metaContent}">`
+      );
+    }
+
+    await zipWriter.add("ZipMailMessage.html", new zip.TextReader(genericHTML), options);
+
+    // === 6. Finalise le ZIP ===
     const zipBlob = await zipWriter.close();
     const base64Zip = await zmutils.blobToBase64(zipBlob);
 
+    // === 7. Nettoyage ===
     for (const att of attachments) {
       await zmutils.removeAttachment(att.id);
     }
-
     await zmutils.addAttachmentFromBase64("msg.zip", base64Zip);
-
-    // Clear password only after ZIP successfully created
-    if (isEncrypted) {
-      await clearPasswordStorage();
-    }
-
-    // Clear ZipMode from custom properties to prevent reencoding an aborted send
+    if (isEncrypted) await clearPasswordStorage();
     await removeCustomProperty(ZIP_MODE_KEY);
 
-    const response = await fetch("https://localhost:3000/assets/ZipMailMessage.html");
-    const genericHTML = await response.text();
-    await new Promise((resolve) => item.body.setAsync(genericHTML, { coercionType: "html" }, resolve));
+    // === 8. Remplace le corps par le message générique ===
+    await new Promise((resolve) =>
+      item.body.setAsync(genericHTML, { coercionType: "html" }, resolve)
+    );
 
     event.completed({ allowEvent: true });
   } catch (e) {
     console.error("onMessageSend failed:", e);
     zmutils.showNotification("Erreur ZipMail : " + e.message);
     event.completed({ allowEvent: false, errorMessage: e.message });
+  }
+}
+
+// =============================================
+// (appelé si Reply ou Forward)
+// =============================================
+Office.actions.associate("onMessageCompose", onMessageCompose);
+
+async function onMessageCompose(event) {
+  try {
+    const bodyHtml = await new Promise((resolve) =>
+      Office.context.mailbox.item.body.getAsync("html", (res) => resolve(res.value))
+    );
+    const meta = zmutils.parseZipMailMeta(bodyHtml);
+    if (meta) {
+      const mode = meta.encrypted ? "encrypted" : "zip";
+      await setZipMode(mode);
+    }
+    event.completed();
+  } catch (e) {
+    console.error("onMessageCompose error:", e);
+    event.completed();
   }
 }
 
@@ -460,4 +569,3 @@ function buildZipMailMeta(obj) {
   }
   return entries.join(";");
 }
-

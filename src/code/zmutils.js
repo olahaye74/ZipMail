@@ -1,4 +1,3 @@
-
 // =============================================
 // ZipMail HELPERS
 // =============================================
@@ -77,19 +76,25 @@ export function parseZipMailMeta(html) {
 
 export async function getAttachmentContent(id) {
   return new Promise((resolve, reject) => {
-    Office.context.mailbox.item.getAttachmentContentAsync(id, (res) => res.status === Office.AsyncResultStatus.Succeeded ? resolve(res.value) : reject(res.error));
+    Office.context.mailbox.item.getAttachmentContentAsync(id, (res) =>
+      res.status === Office.AsyncResultStatus.Succeeded ? resolve(res.value) : reject(res.error)
+    );
   });
 }
 
 export async function removeAttachment(id) {
   return new Promise((resolve, reject) => {
-    Office.context.mailbox.item.removeAttachmentAsync(id, (res) => res.status === Office.AsyncResultStatus.Succeeded ? resolve() : reject(res.error));
+    Office.context.mailbox.item.removeAttachmentAsync(id, (res) =>
+      res.status === Office.AsyncResultStatus.Succeeded ? resolve() : reject(res.error)
+    );
   });
 }
 
 export async function addAttachmentFromBase64(name, base64) {
   return new Promise((resolve, reject) => {
-    Office.context.mailbox.item.addFileAttachmentFromBase64Async(base64, name, (res) => res.status === Office.AsyncResultStatus.Succeeded ? resolve() : reject(res.error));
+    Office.context.mailbox.item.addFileAttachmentFromBase64Async(base64, name, (res) =>
+      res.status === Office.AsyncResultStatus.Succeeded ? resolve() : reject(res.error)
+    );
   });
 }
 
@@ -129,10 +134,6 @@ export function blobToBase64(blob) {
   });
 }
 
-
-
-
-
 // Not used, just in case
 export function showDialogAlert(message) {
   const url = `https://localhost:3000/dialog-alert.html?msg=${encodeURIComponent(message)}`;
@@ -144,4 +145,3 @@ export function showDialogAlert(message) {
     }
   });
 }
-

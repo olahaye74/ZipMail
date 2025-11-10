@@ -1,6 +1,4 @@
-
 import * as zmutils from "./zmutils.js";
-
 
 // src/code/read.js
 Office.initialize = () => {};
@@ -23,14 +21,18 @@ async function onItemRead(event) {
   let bodyHtml = "";
   try {
     bodyHtml = await new Promise((resolve, reject) => {
-      item.body.getAsync("html", (res) => res.status === Office.AsyncResultStatus.Succeeded ? resolve(res.value) : reject(new Error("Échec lecture corps HTML")));
+      item.body.getAsync("html", (res) =>
+        res.status === Office.AsyncResultStatus.Succeeded
+          ? resolve(res.value)
+          : reject(new Error("Échec lecture corps HTML"))
+      );
     });
   } catch {
     event.completed?.();
     return;
   }
 
-  const meta = zmutils.parseZipMailMeta(body.value);
+  const meta = zmutils.parseZipMailMeta(bodyHtml.value);
   if (!meta) {
     event.completed?.();
     return;
@@ -40,16 +42,20 @@ async function onItemRead(event) {
     return;
   }
 
-  let attachments = [];
-  try {
-    attachments = await new Promise((resolve) => {
-      item.getAttachmentsAsync((res) => resolve(res.status === Office.AsyncResultStatus.Succeeded ? res.value : []));
-    });
-  } catch {}
+  let msgZip = null;
 
-  const msgZip = attachments.find((a) => a.name === "msg.zip");
+  const attachments = await new Promise((resolve) => {
+    item.getAttachmentsAsync((res) => {
+      resolve(res.status === Office.AsyncResultStatus.Succeeded ? res.value : []);
+    });
+  });
+
+  msgZip = attachments.find((a) => a.name === "msg.zip");
+
   if (!msgZip) {
-    zmutils.showNotification("msg.zip manquant malgré meta tag. Filtré par antivirus? => Impossible d'afficher le mail. ");
+    zmutils.showNotification(
+      "msg.zip manquant malgré meta tag. Filtré par antivirus? => Impossible d'afficher le mail."
+    );
     event.completed?.();
     return;
   }
@@ -76,7 +82,9 @@ async function onItemRead(event) {
       event.completed?.();
       return;
     }
-    reader = new zip.ZipReader(new zip.BlobReader(new Blob([zipBytes])), { password: result.password });
+    reader = new zip.ZipReader(new zip.BlobReader(new Blob([zipBytes])), {
+      password: result.password,
+    });
     entries = await reader.getEntries().catch((err) => {
       zmutils.showNotification("Mot de passe incorrect. Friendly display aborted.");
       console.error(err);
