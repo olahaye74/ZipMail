@@ -179,7 +179,7 @@
               <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSend" />
 			  <LaunchEvent Type="OnNewMessageCompose" FunctionName="onMessageCompose"/>
             </LaunchEvents>
-	        <SourceLocation resid="ComposeJS.Url"/>
+	        <SourceLocation resid="ComposeRuntime.Url"/>
           </ExtensionPoint>
 	  
 	  <!-- ZipMail Menu for options setup in main window -->
@@ -188,15 +188,17 @@
               <Group id="msgReadGroup">
                 <Label resid="GroupLabel"/>
                 <Control xsi:type="Menu" id="ZipMailReadMenu">
-                  <Label resid="ZipMailMenuLabel"/>
+                  <Label resid="ZipMailReadMenuLabel"/>
                   <Supertip>
-                    <Title resid="ZipMailMenuTitle"/>
-                    <Description resid="ZipMailMenuDesc"/>
+                    <Title resid="ZipMailReadMenuTitle"/>
+                    <Description resid="ZipMailReadMenuDesc"/>
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="IconGreyed.16"/>
-                    <bt:Image size="32" resid="IconGreyed.32"/>
-                    <bt:Image size="64" resid="IconGreyed.64"/>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="64" resid="Icon.64"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                    <bt:Image size="128" resid="Icon.128"/>
                   </Icon>
                   <Items>
                     <Item id="ReadOptions">
@@ -207,6 +209,10 @@
                       </Supertip>
                       <Icon>
                         <bt:Image size="16" resid="IconOptions.16"/>
+                        <bt:Image size="32" resid="IconOptions.32"/>
+                        <bt:Image size="64" resid="IconOptions.64"/>
+                        <bt:Image size="80" resid="IconOptions.80"/>
+                        <bt:Image size="128" resid="IconOptions.128"/>
                       </Icon>
                       <Action xsi:type="ExecuteFunction">
                         <FunctionName>openOptionsDialog</FunctionName>
@@ -249,13 +255,16 @@
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
         <bt:Url id="CommandsRuntime.Url" DefaultValue="https://localhost:3000/commands.html"/> <!-- Prior 2024 -->
         <bt:Url id="ReadRuntime.Url" DefaultValue="https://localhost:3000/read.html"/>
-        <bt:Url id="ComposeJS.Url" DefaultValue="https://localhost:3000/compose.bundle.js"/>
         <bt:Url id="ReadJS.Url" DefaultValue="https://localhost:3000/read.bundle.js"/>
+        <bt:Url id="ComposeRuntime.Url" DefaultValue="https://localhost:3000/compose.html"/>
+        <bt:Url id="ComposeJS.Url" DefaultValue="https://localhost:3000/compose.bundle.js"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="ZipMail"/>
         <bt:String id="ZipMailMenuLabel" DefaultValue="ZIP"/>
         <bt:String id="ZipMailMenuTitle" DefaultValue="Compresser"/>
+        <bt:String id="ZipMailReadMenuLabel" DefaultValue="Options"/>
+        <bt:String id="ZipMailReadMenuTitle" DefaultValue="Options"/>
         <bt:String id="NoZipLabel" DefaultValue="ZIP désactivé"/>
         <bt:String id="NoZipTitle" DefaultValue="Pas de compression ZIP"/>
         <bt:String id="ZipNormalLabel" DefaultValue="ZIP normal"/>
@@ -268,6 +277,7 @@
       <bt:LongStrings>
         <bt:String id="residAppDesc" DefaultValue="Requiert Outlook 2021 ou version ultérieure (ou Outlook Web). Ne fonctionne pas sur Outlook 2013/2016."/>
         <bt:String id="ZipMailMenuDesc" DefaultValue="Compresse le message en ZIP. Cliquez pour ZIP simple, ou sur la flèche pour chiffrer."/>
+        <bt:String id="ZipMailReadMenuDesc" DefaultValue="Règlages pour ZipMail"/>
         <bt:String id="NoZipDesc" DefaultValue="Pas de compression."/>
         <bt:String id="ZipNormalDesc" DefaultValue="Compresse sans chiffrer."/>
         <bt:String id="ZipEncryptedDesc" DefaultValue="Compresse avec mot de passe (AES-256)."/>
