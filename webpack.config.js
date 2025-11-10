@@ -118,6 +118,7 @@ export default {
       patterns: [
         { from: "manifest.xml", to: "[name][ext]" },
         { from: "assets", to: "assets" },
+        { from: "./src/pages/taskpane.css", to: "taskpane.css" },
       ],
     }),
 
