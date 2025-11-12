@@ -177,9 +177,9 @@
             <LaunchEvents>
               <!-- <LaunchEvent Type="OnMessageSend" FunctionExecution="asynchronous" FunctionName="onMessageSend" /> -->
               <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSend" />
-			  <LaunchEvent Type="OnNewMessageCompose" FunctionName="onMessageCompose"/>
+              <LaunchEvent Type="OnNewMessageCompose" FunctionName="onMessageCompose"/>
             </LaunchEvents>
-	        <SourceLocation resid="ComposeRuntime.Url"/>
+            <SourceLocation resid="ComposeRuntime.Url"/>
           </ExtensionPoint>
 	  
 	  <!-- ZipMail Menu for options setup in main window -->

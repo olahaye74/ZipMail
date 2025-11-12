@@ -460,7 +460,12 @@ async function onMessageSend(event) {
     let options = { compression: "DEFLATE", compressionOptions: { level: zipLevel } };
 
     if (isEncrypted) {
-      const password = await getPasswordFromStorage();
+      let password = null;
+      try {
+        password = await getPasswordFromStorage();
+      } catch (e) {
+        console.error("Erreur lecture mot de passe:", e);
+      }
       if (!password) {
         zmutils.showNotification("Mot de passe requis — envoi annulé.");
         await zipWriter.close();
